@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="hi" onclick="hideme()">click to hide me</button>
+    <form action="http://localhost:4000/api/add" id="abc" method="post">
+        <input type="text" name="todo" id="todo" required>
+        <button type="submit">Save todo</button>
+    </form>
+    <br>
+    <div id="todos">
+        
+    </div>
+
+    <script>
+        let a=true
+        function hideme(){
+            a=!a
+            if(a){
+                document.getElementById('todos').style.display='block'
+
+            }else{
+                document.getElementById('todos').style.display='none'
+
+            }
+        }
+        console.log('start')
+        let todosdiv = document.getElementById('todos')
+        todosdiv.innerHTML=""
+        fetch('http://localhost:4000/api/todos',{
+                    headers:{
+                        "Content-type":"application/json; charset=UTF-8"
+                    },
+                    method:'GET'
+            }).then((res)=>res.json())
+            .then((data)=>{
+                data.todos.forEach((t)=>{
+                    todosdiv.innerHTML+=`<p>${t}</p>`
+                })
+        })
+
+
+        document.getElementById('abc').addEventListener('submit',function(e){
+            e.preventDefault()
+            let todo=document.getElementById('todo').value
+            fetch('http://localhost:4000/api/add',{
+                    headers:{
+                        "Content-type":"application/json; charset=UTF-8"
+                    },
+                    method:'POST',
+                    body:JSON.stringify({todo})
+            }).then((res)=>res.json())
+            .then((data)=>{
+                console.log(data)
+                if(data.success){
+                    document.getElementById('todo').value=""
+                    todosdiv.innerHTML+=`<p>${todo}</p>`
+                }
+            })
+        })
+    </script>
+</body>
+</html>
